@@ -69,6 +69,25 @@ extension NSObject {
         return arr.flatMap({ return self.wm_model($0) })
     }
 
+    /**
+     模型json化
+     
+     - returns:
+     */
+    func wm_jsonPrettyStringEncoded() -> String? {
+        
+        let dict = wm_dict()
+        
+        guard NSJSONSerialization.isValidJSONObject(dict) else { return nil }
+        
+        do{
+            
+            let date = try NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted)
+            return String(data: date, encoding: NSUTF8StringEncoding)
+        }catch {
+            return nil
+        }
+    }
     
     /**
      使用这个方法如果有嵌套模型就要重写wm_modelPropertyClass方法
