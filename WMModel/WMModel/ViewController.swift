@@ -24,9 +24,14 @@ class ViewController: UIViewController {
             
             
             
-            let models =  WMHotVideoModel.wm_models(dictArray) as! [WMHotVideoModel]
+           // let models =  WMHotVideoModel.wm_models(dictArray) as! [WMHotVideoModel]
             
+            let model = WMHotVideoModel()
+            
+            print(dictArray.first)
+            model.wm_setValues(dictArray.first)
         
+            print(model.wm_dict())
             
         }
         

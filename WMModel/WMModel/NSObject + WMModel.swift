@@ -193,6 +193,7 @@ extension NSObject {
                     }else if let arr = value as? [[String:AnyObject]]{
                         
                         
+                        
                         let array = arr.flatMap{  return cls.wm_model($0) }
                         
                         tryErroer({
@@ -214,6 +215,72 @@ extension NSObject {
             }
         }
         return mo
+        
+    }
+    /**
+     字典转模型,  使用这个方法如果有嵌套模型就要重写wm_modelPropertyClass方法
+     
+     - parameter json: json
+     */
+    func wm_setValues(json:AnyObject?){
+        
+        let dict = objecDict(json)
+        let properList = self.Class().attributeList()
+        let attribute = self.wm_modelPropertyClass()
+        for propery in properList {
+            
+            if let cls = attribute?.value(propery) {
+                
+                if cls is NSURL.Type {
+                    
+                    let url = dictString(dict?.value(propery))?.url
+                    
+                    tryErroer({
+                        
+                        self.setValue(url, forKey: propery)
+                        
+                        }, { (error) in
+                            print(error)
+                    })
+                }else{
+                    guard let value = dict?.value(propery) else {
+                        
+                        continue
+                    }
+                    
+                    if value is [String:AnyObject] {
+                        
+                        tryErroer({
+                            self.setValue(cls.wm_model(dict?.value(propery) as? [String:AnyObject]), forKey: propery)
+                            }, { (error) in
+                                
+                                print("\(self) error == \(error)")
+                        })
+                    }else if let arr = value as? [[String:AnyObject]]{
+                        
+                        
+                        
+                        let array = arr.flatMap{  return cls.wm_model($0) }
+                        
+                        tryErroer({
+                            
+                            self.setValue(array, forKey: propery)
+                            }, { (error) in
+                                
+                                print("\(self) error == \(error)")
+                        })
+                        
+                    }
+                }
+            }else{
+                guard let value = dict?.value(propery) else {
+                    
+                    continue
+                }
+                self.Class().setValue(self, value: value, propery: propery)
+            }
+        }
+      
         
     }
     
